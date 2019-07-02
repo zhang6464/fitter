@@ -13,3 +13,8 @@
 
 * Update readme
     - add showcase
+
+## [0.0.4] - 2019.7.2
+
+* update readme
+    - add thanks to genius158
