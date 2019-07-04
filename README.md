@@ -23,7 +23,8 @@ void main() {
 
 ## Kown Bugs
 
-* `UIKitView` components(like `webview` or `video`..) doesn't work as expected, and I'm not really clear about the reason now yet..
+* `UIKitView` components(like `webview` or `video`..) doesn't work as expected, and I'm not really clear about the reason now yet...
+* Depend on `flutter sdk` 1.5+ version, error occurs on below versions, and also don't know why...
 
 ## Thanks To
 

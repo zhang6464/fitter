@@ -18,3 +18,7 @@
 
 * update readme
     - add thanks to genius158
+
+## [1.0.0] - 2019.7.4
+
+* add flutter sdk version dependency
