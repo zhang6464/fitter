@@ -21,4 +21,11 @@
 
 ## [1.0.0] - 2019.7.4
 
-* add flutter sdk version dependency
+* add dependency
+    - add flutter sdk version dependency
+
+## [0.1.0] - 2019.7.4
+
+* support old version
+    - support flutter <= 1.1.9
+    - support custom design resolution

@@ -6,61 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 
-import './view_adapter_config.dart';
+import './view_adapter.dart';
 
-/// A convenience class that wraps a number of widgets that are commonly
-/// required for an application.
-///
-/// One of the primary roles that [WidgetsApp] provides is binding the system
-/// back button to popping the [Navigator] or quitting the application.
-///
-/// See also: [CheckedModeBanner], [DefaultTextStyle], [MediaQuery],
-/// [Localizations], [Title], [Navigator], [Overlay], [SemanticsDebugger] (the
-/// widgets wrapped by this one).
 class CustomWidgetsApp extends StatefulWidget {
-  /// Creates a widget that wraps a number of widgets that are commonly
-  /// required for an application.
-  ///
-  /// The boolean arguments, [color], and [navigatorObservers] must not be null.
-  ///
-  /// Most callers will want to use the [home] or [routes] parameters, or both.
-  /// The [home] parameter is a convenience for the following [routes] map:
-  ///
-  /// ```dart
-  /// <String, WidgetBuilder>{ '/': (BuildContext context) => myWidget }
-  /// ```
-  ///
-  /// It is possible to specify both [home] and [routes], but only if [routes] does
-  ///  _not_ contain an entry for `'/'`.  Conversely, if [home] is omitted, [routes]
-  /// _must_ contain an entry for `'/'`.
-  ///
-  /// If [home] or [routes] are not null, the routing implementation needs to know how
-  /// appropriately build [PageRoutes]. This can be achieved by supplying the
-  /// [pageRouteBuilder] parameter.  The [pageRouteBuilder] is used by [MaterialApp]
-  /// and [CupertinoApp] to create [MaterialPageRoute]s and [CupertinoPageRoute],
-  /// respectively.
-  ///
-  /// The [builder] parameter is designed to provide the ability to wrap the visible
-  /// content of the app in some other widget. It is recommended that you use [home]
-  /// rather than [builder] if you intend to only display a single route in your app.
-  ///
-  /// [WidgetsApp] is also possible to provide a custom implementation of routing via the
-  /// [onGeneratedRoute] and [onUnknownRoute] parameters. These parameters correspond
-  /// to [Navigator.onGenerateRoute] and [Navigator.onUnknownRoute]. If [home], [routes],
-  /// and [builder] are null, or if they fail to create a requested route,
-  /// [onGeneratedRoute] will be invoked.  If that fails, [onUnknownRoute] will be invoked.
-  ///
-  /// The [pageRouteBuilder] will create a [PageRoute] that wraps newly built routes.
-  /// If the [builder] is non-null and the [onGenerateRoute] argument is null, then the
-  /// [builder] will not be provided only with the context and the child widget, whereas
-  /// the [pageRouteBuilder] will be provided with [RouteSettings]. If [onGenerateRoute]
-  /// is not provided, [navigatorKey], [onUnknownRoute], [navigatorObservers], and
-  /// [initialRoute] must have their default values, as they will have no effect.
-  ///
-  /// The `supportedLocales` argument must be a list of one or more elements.
-  /// By default supportedLocales is `[const Locale('en', 'US')]`.
-  CustomWidgetsApp({
-    // can't be const because the asserts use methods on Iterable :-(
+  CustomWidgetsApp({ // can't be const because the asserts use methods on Iterable :-(
     Key key,
     this.navigatorKey,
     this.onGenerateRoute,
@@ -87,58 +36,64 @@ class CustomWidgetsApp extends StatefulWidget {
     this.debugShowWidgetInspector = false,
     this.debugShowCheckedModeBanner = true,
     this.inspectorSelectButtonBuilder,
-  })  : assert(navigatorObservers != null),
-        assert(routes != null),
-        assert(
-            home == null || !routes.containsKey(Navigator.defaultRouteName),
-            'If the home property is specified, the routes table '
-            'cannot include an entry for "/", since it would be redundant.'),
-        assert(
-            builder != null ||
-                home != null ||
-                routes.containsKey(Navigator.defaultRouteName) ||
-                onGenerateRoute != null ||
-                onUnknownRoute != null,
-            'Either the home property must be specified, '
-            'or the routes table must include an entry for "/", '
-            'or there must be on onGenerateRoute callback specified, '
-            'or there must be an onUnknownRoute callback specified, '
-            'or the builder property must be specified, '
-            'because otherwise there is nothing to fall back on if the '
-            'app is started with an intent that specifies an unknown route.'),
-        assert(
-            (home != null ||
-                    routes.isNotEmpty ||
-                    onGenerateRoute != null ||
-                    onUnknownRoute != null) ||
-                (builder != null &&
-                    navigatorKey == null &&
-                    initialRoute == null &&
-                    navigatorObservers.isEmpty),
-            'If no route is provided using '
-            'home, routes, onGenerateRoute, or onUnknownRoute, '
-            'a non-null callback for the builder property must be provided, '
-            'and the other navigator-related properties, '
-            'navigatorKey, initialRoute, and navigatorObservers, '
-            'must have their initial values '
-            '(null, null, and the empty list, respectively).'),
-        assert(
-            builder != null ||
-                onGenerateRoute != null ||
-                pageRouteBuilder != null,
-            'If neither builder nor onGenerateRoute are provided, the '
-            'pageRouteBuilder must be specified so that the default handler '
-            'will know what kind of PageRoute transition to build.'),
-        assert(title != null),
-        assert(color != null),
-        assert(supportedLocales != null && supportedLocales.isNotEmpty),
-        assert(showPerformanceOverlay != null),
-        assert(checkerboardRasterCacheImages != null),
-        assert(checkerboardOffscreenLayers != null),
-        assert(showSemanticsDebugger != null),
-        assert(debugShowCheckedModeBanner != null),
-        assert(debugShowWidgetInspector != null),
-        super(key: key);
+  }) : assert(navigatorObservers != null),
+       assert(routes != null),
+       assert(
+         home == null ||
+         !routes.containsKey(Navigator.defaultRouteName),
+         'If the home property is specified, the routes table '
+         'cannot include an entry for "/", since it would be redundant.'
+       ),
+       assert(
+         builder != null ||
+         home != null ||
+         routes.containsKey(Navigator.defaultRouteName) ||
+         onGenerateRoute != null ||
+         onUnknownRoute != null,
+         'Either the home property must be specified, '
+         'or the routes table must include an entry for "/", '
+         'or there must be on onGenerateRoute callback specified, '
+         'or there must be an onUnknownRoute callback specified, '
+         'or the builder property must be specified, '
+         'because otherwise there is nothing to fall back on if the '
+         'app is started with an intent that specifies an unknown route.'
+       ),
+       assert(
+         (home != null ||
+          routes.isNotEmpty ||
+          onGenerateRoute != null ||
+          onUnknownRoute != null)
+         ||
+         (builder != null &&
+          navigatorKey == null &&
+          initialRoute == null &&
+          navigatorObservers.isEmpty),
+         'If no route is provided using '
+         'home, routes, onGenerateRoute, or onUnknownRoute, '
+         'a non-null callback for the builder property must be provided, '
+         'and the other navigator-related properties, '
+         'navigatorKey, initialRoute, and navigatorObservers, '
+         'must have their initial values '
+         '(null, null, and the empty list, respectively).'
+       ),
+       assert(
+         builder != null ||
+         onGenerateRoute != null ||
+         pageRouteBuilder != null,
+         'If neither builder nor onGenerateRoute are provided, the '
+         'pageRouteBuilder must be specified so that the default handler '
+         'will know what kind of PageRoute transition to build.'
+       ),
+       assert(title != null),
+       assert(color != null),
+       assert(supportedLocales != null && supportedLocales.isNotEmpty),
+       assert(showPerformanceOverlay != null),
+       assert(checkerboardRasterCacheImages != null),
+       assert(checkerboardOffscreenLayers != null),
+       assert(showSemanticsDebugger != null),
+       assert(debugShowCheckedModeBanner != null),
+       assert(debugShowWidgetInspector != null),
+       super(key: key);
 
   /// {@template flutter.widgets.widgetsApp.navigatorKey}
   /// A key to use when building the [Navigator].
@@ -620,23 +575,23 @@ class CustomWidgetsApp extends StatefulWidget {
   _CustomWidgetsAppState createState() => _CustomWidgetsAppState();
 }
 
-class _CustomWidgetsAppState extends State<CustomWidgetsApp>
-    implements WidgetsBindingObserver {
+class _CustomWidgetsAppState extends State<CustomWidgetsApp> implements WidgetsBindingObserver {
+
   // STATE LIFECYCLE
 
   @override
   void initState() {
     super.initState();
     _updateNavigator();
-    _locale = _resolveLocales(
-        WidgetsBinding.instance.window.locales, widget.supportedLocales);
+    _locale = _resolveLocales(ui.window.locales, widget.supportedLocales);
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didUpdateWidget(CustomWidgetsApp oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.navigatorKey != oldWidget.navigatorKey) _updateNavigator();
+    if (widget.navigatorKey != oldWidget.navigatorKey)
+      _updateNavigator();
   }
 
   @override
@@ -646,10 +601,11 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {}
+  void didChangeAppLifecycleState(AppLifecycleState state) { }
 
   @override
-  void didHaveMemoryPressure() {}
+  void didHaveMemoryPressure() { }
+
 
   // NAVIGATOR
 
@@ -661,25 +617,24 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
 
   Route<dynamic> _onGenerateRoute(RouteSettings settings) {
     final String name = settings.name;
-    final WidgetBuilder pageContentBuilder =
-        name == Navigator.defaultRouteName && widget.home != null
-            ? (BuildContext context) => widget.home
-            : widget.routes[name];
+    final WidgetBuilder pageContentBuilder = name == Navigator.defaultRouteName && widget.home != null
+        ? (BuildContext context) => widget.home
+        : widget.routes[name];
 
     if (pageContentBuilder != null) {
-      assert(
-          widget.pageRouteBuilder != null,
-          'The default onGenerateRoute handler for WidgetsApp must have a '
-          'pageRouteBuilder set if the home or routes properties are set.');
-      final Route<dynamic> route = widget.pageRouteBuilder<dynamic>(
+      assert(widget.pageRouteBuilder != null,
+        'The default onGenerateRoute handler for WidgetsApp must have a '
+        'pageRouteBuilder set if the home or routes properties are set.');
+      final Route<dynamic> route = widget.pageRouteBuilder(
         settings,
         pageContentBuilder,
       );
       assert(route != null,
-          'The pageRouteBuilder for WidgetsApp must return a valid non-null Route.');
+        'The pageRouteBuilder for WidgetsApp must return a valid non-null Route.');
       return route;
     }
-    if (widget.onGenerateRoute != null) return widget.onGenerateRoute(settings);
+    if (widget.onGenerateRoute != null)
+      return widget.onGenerateRoute(settings);
     return null;
   }
 
@@ -687,25 +642,28 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     assert(() {
       if (widget.onUnknownRoute == null) {
         throw FlutterError(
-            'Could not find a generator for route $settings in the $runtimeType.\n'
-            'Generators for routes are searched for in the following order:\n'
-            ' 1. For the "/" route, the "home" property, if non-null, is used.\n'
-            ' 2. Otherwise, the "routes" table is used, if it has an entry for '
-            'the route.\n'
-            ' 3. Otherwise, onGenerateRoute is called. It should return a '
-            'non-null value for any valid route not handled by "home" and "routes".\n'
-            ' 4. Finally if all else fails onUnknownRoute is called.\n'
-            'Unfortunately, onUnknownRoute was not set.');
+          'Could not find a generator for route $settings in the $runtimeType.\n'
+          'Generators for routes are searched for in the following order:\n'
+          ' 1. For the "/" route, the "home" property, if non-null, is used.\n'
+          ' 2. Otherwise, the "routes" table is used, if it has an entry for '
+          'the route.\n'
+          ' 3. Otherwise, onGenerateRoute is called. It should return a '
+          'non-null value for any valid route not handled by "home" and "routes".\n'
+          ' 4. Finally if all else fails onUnknownRoute is called.\n'
+          'Unfortunately, onUnknownRoute was not set.'
+        );
       }
       return true;
     }());
     final Route<dynamic> result = widget.onUnknownRoute(settings);
     assert(() {
       if (result == null) {
-        throw FlutterError('The onUnknownRoute callback returned null.\n'
-            'When the $runtimeType requested the route $settings from its '
-            'onUnknownRoute callback, the callback returned null. Such callbacks '
-            'must never return null.');
+        throw FlutterError(
+          'The onUnknownRoute callback returned null.\n'
+          'When the $runtimeType requested the route $settings from its '
+          'onUnknownRoute callback, the callback returned null. Such callbacks '
+          'must never return null.'
+        );
       }
       return true;
     }());
@@ -717,7 +675,8 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
   Future<bool> didPopRoute() async {
     assert(mounted);
     final NavigatorState navigator = _navigator?.currentState;
-    if (navigator == null) return false;
+    if (navigator == null)
+      return false;
     return await navigator.maybePop();
   }
 
@@ -725,33 +684,33 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
   Future<bool> didPushRoute(String route) async {
     assert(mounted);
     final NavigatorState navigator = _navigator?.currentState;
-    if (navigator == null) return false;
+    if (navigator == null)
+      return false;
     navigator.pushNamed(route);
     return true;
   }
+
 
   // LOCALIZATION
 
   /// This is the resolved locale, and is one of the supportedLocales.
   Locale _locale;
 
-  Locale _resolveLocales(
-      List<Locale> preferredLocales, Iterable<Locale> supportedLocales) {
+  Locale _resolveLocales(List<Locale> preferredLocales, Iterable<Locale> supportedLocales) {
     // Attempt to use localeListResolutionCallback.
     if (widget.localeListResolutionCallback != null) {
-      final Locale locale = widget.localeListResolutionCallback(
-          preferredLocales, widget.supportedLocales);
-      if (locale != null) return locale;
+      final Locale locale = widget.localeListResolutionCallback(preferredLocales, widget.supportedLocales);
+      if (locale != null)
+        return locale;
     }
     // localeListResolutionCallback failed, falling back to localeResolutionCallback.
     if (widget.localeResolutionCallback != null) {
       final Locale locale = widget.localeResolutionCallback(
-        preferredLocales != null && preferredLocales.isNotEmpty
-            ? preferredLocales.first
-            : null,
+        preferredLocales != null && preferredLocales.isNotEmpty ? preferredLocales.first : null,
         widget.supportedLocales,
       );
-      if (locale != null) return locale;
+      if (locale != null)
+        return locale;
     }
     // Both callbacks failed, falling back to default algorithm.
     return basicLocaleListResolution(preferredLocales, supportedLocales);
@@ -798,8 +757,7 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
   /// into account, and will not handle edge cases such as resolving `de` to `fr` rather than `zh`
   /// when `de` is not supported and `zh` is listed before `fr` (German is closer to French
   /// than Chinese).
-  static Locale basicLocaleListResolution(
-      List<Locale> preferredLocales, Iterable<Locale> supportedLocales) {
+  static Locale basicLocaleListResolution(List<Locale> preferredLocales, Iterable<Locale> supportedLocales) {
     // preferredLocales can be null when called before the platform has had a chance to
     // initialize the locales. Platforms without locale passing support will provide an empty list.
     // We default to the first supported locale in these cases.
@@ -809,20 +767,14 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     // Hash the supported locales because apps can support many locales and would
     // be expensive to search through them many times.
     final Map<String, Locale> allSupportedLocales = HashMap<String, Locale>();
-    final Map<String, Locale> languageAndCountryLocales =
-        HashMap<String, Locale>();
-    final Map<String, Locale> languageAndScriptLocales =
-        HashMap<String, Locale>();
+    final Map<String, Locale> languageAndCountryLocales = HashMap<String, Locale>();
+    final Map<String, Locale> languageAndScriptLocales = HashMap<String, Locale>();
     final Map<String, Locale> languageLocales = HashMap<String, Locale>();
     final Map<String, Locale> countryLocales = HashMap<String, Locale>();
     for (Locale locale in supportedLocales) {
-      allSupportedLocales[
-              '${locale.languageCode}_${locale.scriptCode}_${locale.countryCode}'] ??=
-          locale;
-      languageAndScriptLocales[
-          '${locale.languageCode}_${locale.scriptCode}'] ??= locale;
-      languageAndCountryLocales[
-          '${locale.languageCode}_${locale.countryCode}'] ??= locale;
+      allSupportedLocales['${locale.languageCode}_${locale.scriptCode}_${locale.countryCode}'] ??= locale;
+      languageAndScriptLocales['${locale.languageCode}_${locale.scriptCode}'] ??= locale;
+      languageAndCountryLocales['${locale.languageCode}_${locale.countryCode}'] ??= locale;
       languageLocales[locale.languageCode] ??= locale;
       countryLocales[locale.countryCode] ??= locale;
     }
@@ -835,27 +787,22 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     Locale matchesLanguageCode;
     Locale matchesCountryCode;
     // Loop over user's preferred locales
-    for (int localeIndex = 0;
-        localeIndex < preferredLocales.length;
-        localeIndex += 1) {
+    for (int localeIndex = 0; localeIndex < preferredLocales.length; localeIndex += 1) {
       final Locale userLocale = preferredLocales[localeIndex];
       // Look for perfect match.
-      if (allSupportedLocales.containsKey(
-          '${userLocale.languageCode}_${userLocale.scriptCode}_${userLocale.countryCode}')) {
+      if (allSupportedLocales.containsKey('${userLocale.languageCode}_${userLocale.scriptCode}_${userLocale.countryCode}')) {
         return userLocale;
       }
       // Look for language+script match.
       if (userLocale.scriptCode != null) {
-        final Locale match = languageAndScriptLocales[
-            '${userLocale.languageCode}_${userLocale.scriptCode}'];
+        final Locale match = languageAndScriptLocales['${userLocale.languageCode}_${userLocale.scriptCode}'];
         if (match != null) {
           return match;
         }
       }
       // Look for language+country match.
       if (userLocale.countryCode != null) {
-        final Locale match = languageAndCountryLocales[
-            '${userLocale.languageCode}_${userLocale.countryCode}'];
+      final Locale match = languageAndCountryLocales['${userLocale.languageCode}_${userLocale.countryCode}'];
         if (match != null) {
           return match;
         }
@@ -875,9 +822,7 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
         // languageCode is the same, we defer hastily returning until the next iteration
         // since at worst it is the same and at best an improved match.
         if (localeIndex == 0 &&
-            !(localeIndex + 1 < preferredLocales.length &&
-                preferredLocales[localeIndex + 1].languageCode ==
-                    userLocale.languageCode)) {
+            !(localeIndex + 1 < preferredLocales.length && preferredLocales[localeIndex + 1].languageCode == userLocale.languageCode)) {
           return matchesLanguageCode;
         }
       }
@@ -894,8 +839,7 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     // When there is no languageCode-only match. Fallback to matching countryCode only. Country
     // fallback only applies on iOS. When there is no countryCode-only match, we return first
     // suported locale.
-    final Locale resolvedLocale =
-        matchesLanguageCode ?? matchesCountryCode ?? supportedLocales.first;
+    final Locale resolvedLocale = matchesLanguageCode ?? matchesCountryCode ?? supportedLocales.first;
     return resolvedLocale;
   }
 
@@ -925,17 +869,18 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
   @override
   void didChangeAccessibilityFeatures() {
     setState(() {
-      // The properties of window have changed. We use them in our build
+      // The properties of ui.window have changed. We use them in our build
       // function, so we need setState(), but we don't cache anything locally.
     });
   }
+
 
   // METRICS
 
   @override
   void didChangeMetrics() {
     setState(() {
-      // The properties of window have changed. We use them in our build
+      // The properties of ui.window have changed. We use them in our build
       // function, so we need setState(), but we don't cache anything locally.
     });
   }
@@ -943,60 +888,55 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
   @override
   void didChangeTextScaleFactor() {
     setState(() {
-      // The textScaleFactor property of window has changed. We reference
-      // window in our build function, so we need to call setState(), but
+      // The textScaleFactor property of ui.window has changed. We reference
+      // ui.window in our build function, so we need to call setState(), but
       // we don't need to cache anything locally.
     });
   }
 
-  // RENDERING
-  @override
-  void didChangePlatformBrightness() {
-    setState(() {
-      // The platformBrightness property of window has changed. We reference
-      // window in our build function, so we need to call setState(), but
-      // we don't need to cache anything locally.
-    });
-  }
 
   // BUILDER
 
   bool _debugCheckLocalizations(Locale appLocale) {
     assert(() {
-      final Set<Type> unsupportedTypes = _localizationsDelegates
-          .map<Type>((LocalizationsDelegate<dynamic> delegate) => delegate.type)
-          .toSet();
+      final Set<Type> unsupportedTypes =
+        _localizationsDelegates.map<Type>((LocalizationsDelegate<dynamic> delegate) => delegate.type).toSet();
       for (LocalizationsDelegate<dynamic> delegate in _localizationsDelegates) {
-        if (!unsupportedTypes.contains(delegate.type)) continue;
+        if (!unsupportedTypes.contains(delegate.type))
+          continue;
         if (delegate.isSupported(appLocale))
           unsupportedTypes.remove(delegate.type);
       }
-      if (unsupportedTypes.isEmpty) return true;
+      if (unsupportedTypes.isEmpty)
+        return true;
 
       // Currently the Cupertino library only provides english localizations.
       // Remove this when https://github.com/flutter/flutter/issues/23847
       // is fixed.
-      if (listEquals(
-          unsupportedTypes.map((Type type) => type.toString()).toList(),
-          <String>['CupertinoLocalizations'])) return true;
+      if (listEquals(unsupportedTypes.map((Type type) => type.toString()).toList(), <String>['CupertinoLocalizations']))
+        return true;
 
       final StringBuffer message = StringBuffer();
       message.writeln('\u2550' * 8);
       message.writeln(
-          'Warning: This application\'s locale, $appLocale, is not supported by all of its\n'
-          'localization delegates.');
+        'Warning: This application\'s locale, $appLocale, is not supported by all of its\n'
+        'localization delegates.'
+      );
       for (Type unsupportedType in unsupportedTypes) {
         // Currently the Cupertino library only provides english localizations.
         // Remove this when https://github.com/flutter/flutter/issues/23847
         // is fixed.
-        if (unsupportedType.toString() == 'CupertinoLocalizations') continue;
+        if (unsupportedType.toString() == 'CupertinoLocalizations')
+          continue;
         message.writeln(
-            '> A $unsupportedType delegate that supports the $appLocale locale was not found.');
+          '> A $unsupportedType delegate that supports the $appLocale locale was not found.'
+        );
       }
       message.writeln(
-          'See https://flutter.io/tutorials/internationalization/ for more\n'
-          'information about configuring an app\'s locale, supportedLocales,\n'
-          'and localizationsDelegates parameters.');
+        'See https://flutter.io/tutorials/internationalization/ for more\n'
+        'information about configuring an app\'s locale, supportedLocales,\n'
+        'and localizationsDelegates parameters.'
+      );
       message.writeln('\u2550' * 8);
       debugPrint(message.toString());
       return true;
@@ -1010,14 +950,12 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     if (_navigator != null) {
       navigator = Navigator(
         key: _navigator,
-        // If window.defaultRouteName isn't '/', we should assume it was set
+        // If ui.window.defaultRouteName isn't '/', we should assume it was set
         // intentionally via `setInitialRoute`, and should override whatever
         // is in [widget.initialRoute].
-        initialRoute: WidgetsBinding.instance.window.defaultRouteName !=
-                Navigator.defaultRouteName
-            ? WidgetsBinding.instance.window.defaultRouteName
-            : widget.initialRoute ??
-                WidgetsBinding.instance.window.defaultRouteName,
+        initialRoute: ui.window.defaultRouteName != Navigator.defaultRouteName
+            ? ui.window.defaultRouteName
+            : widget.initialRoute ?? ui.window.defaultRouteName,
         onGenerateRoute: _onGenerateRoute,
         onUnknownRoute: _onUnknownRoute,
         observers: widget.navigatorObservers,
@@ -1046,24 +984,24 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     PerformanceOverlay performanceOverlay;
     // We need to push a performance overlay if any of the display or checkerboarding
     // options are set.
-    if (widget.showPerformanceOverlay ||
-        CustomWidgetsApp.showPerformanceOverlayOverride) {
+    if (widget.showPerformanceOverlay || CustomWidgetsApp.showPerformanceOverlayOverride) {
       performanceOverlay = PerformanceOverlay.allEnabled(
         checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
         checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
       );
-    } else if (widget.checkerboardRasterCacheImages ||
-        widget.checkerboardOffscreenLayers) {
+    } else if (widget.checkerboardRasterCacheImages || widget.checkerboardOffscreenLayers) {
       performanceOverlay = PerformanceOverlay(
         checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
         checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
       );
     }
     if (performanceOverlay != null) {
-      result = Stack(children: <Widget>[
-        result,
-        Positioned(top: 0.0, left: 0.0, right: 0.0, child: performanceOverlay),
-      ]);
+      result = Stack(
+        children: <Widget>[
+          result,
+          Positioned(top: 0.0, left: 0.0, right: 0.0, child: performanceOverlay),
+        ]
+      );
     }
 
     if (widget.showSemanticsDebugger) {
@@ -1073,15 +1011,13 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     }
 
     assert(() {
-      if (widget.debugShowWidgetInspector ||
-          CustomWidgetsApp.debugShowWidgetInspectorOverride) {
+      if (widget.debugShowWidgetInspector || CustomWidgetsApp.debugShowWidgetInspectorOverride) {
         result = WidgetInspector(
           child: result,
           selectButtonBuilder: widget.inspectorSelectButtonBuilder,
         );
       }
-      if (widget.debugShowCheckedModeBanner &&
-          CustomWidgetsApp.debugAllowBannerOverride) {
+      if (widget.debugShowCheckedModeBanner && CustomWidgetsApp.debugAllowBannerOverride) {
         result = CheckedModeBanner(
           child: result,
         );
@@ -1097,8 +1033,7 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
         // parameter.
         builder: (BuildContext context) {
           final String title = widget.onGenerateTitle(context);
-          assert(
-              title != null, 'onGenerateTitle must return a non-null String');
+          assert(title != null, 'onGenerateTitle must return a non-null String');
           return Title(
             title: title,
             color: widget.color,
@@ -1115,12 +1050,13 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
     }
 
     final Locale appLocale = widget.locale != null
-        ? _resolveLocales(<Locale>[widget.locale], widget.supportedLocales)
-        : _locale;
+      ? _resolveLocales(<Locale>[widget.locale], widget.supportedLocales)
+      : _locale;
 
     assert(_debugCheckLocalizations(appLocale));
+
     return MediaQuery(
-      data: _coposeMediaQueryData(WidgetsBinding.instance.window),
+      data: ViewAdapter.coposeMediaQueryData(ui.window),
       child: Localizations(
         locale: appLocale,
         delegates: _localizationsDelegates.toList(),
@@ -1128,20 +1064,4 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
       ),
     );
   }
-}
-
-MediaQueryData _coposeMediaQueryData(ui.Window window) {
-  var deviceRatio = getAdapterRatio();
-  return MediaQueryData(
-      size: window.physicalSize / deviceRatio,
-      devicePixelRatio: deviceRatio,
-      textScaleFactor: window.textScaleFactor,
-      platformBrightness: window.platformBrightness,
-      padding: EdgeInsets.fromWindowPadding(window.padding, deviceRatio),
-      viewInsets: EdgeInsets.fromWindowPadding(window.viewInsets, deviceRatio),
-      accessibleNavigation: window.accessibilityFeatures.accessibleNavigation,
-      invertColors: window.accessibilityFeatures.invertColors,
-      disableAnimations: window.accessibilityFeatures.disableAnimations,
-      boldText: window.accessibilityFeatures.boldText,
-      alwaysUse24HourFormat: window.alwaysUse24HourFormat);
 }
