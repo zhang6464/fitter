@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 
-import './view_adapter_config.dart';
+import './view_adapter.dart';
 
 /// A convenience class that wraps a number of widgets that are commonly
 /// required for an application.
@@ -1120,7 +1120,7 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
 
     assert(_debugCheckLocalizations(appLocale));
     return MediaQuery(
-      data: _coposeMediaQueryData(WidgetsBinding.instance.window),
+      data: ViewAdapter.coposeMediaQueryData(WidgetsBinding.instance.window),
       child: Localizations(
         locale: appLocale,
         delegates: _localizationsDelegates.toList(),
@@ -1128,20 +1128,4 @@ class _CustomWidgetsAppState extends State<CustomWidgetsApp>
       ),
     );
   }
-}
-
-MediaQueryData _coposeMediaQueryData(ui.Window window) {
-  var deviceRatio = getAdapterRatio();
-  return MediaQueryData(
-      size: window.physicalSize / deviceRatio,
-      devicePixelRatio: deviceRatio,
-      textScaleFactor: window.textScaleFactor,
-      platformBrightness: window.platformBrightness,
-      padding: EdgeInsets.fromWindowPadding(window.padding, deviceRatio),
-      viewInsets: EdgeInsets.fromWindowPadding(window.viewInsets, deviceRatio),
-      accessibleNavigation: window.accessibilityFeatures.accessibleNavigation,
-      invertColors: window.accessibilityFeatures.invertColors,
-      disableAnimations: window.accessibilityFeatures.disableAnimations,
-      boldText: window.accessibilityFeatures.boldText,
-      alwaysUse24HourFormat: window.alwaysUse24HourFormat);
 }

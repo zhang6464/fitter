@@ -1,6 +1,6 @@
 ## [0.0.1] - 2019.7.2
 
-* Initial release
+* Initial release
     - add custom Material and WidgetApp class
     - add viewConfiguration
 
@@ -19,6 +19,19 @@
 * update readme
     - add thanks to genius158
 
+## [0.1.0] - 2019.7.4
+
+* support old version
+    - support flutter <= 1.1.9
+    - support custom design resolution
+
 ## [1.0.0] - 2019.7.4
 
-* add flutter sdk version dependency
+* add dependency
+    - add flutter sdk version dependency
+
+## [1.0.1] - 2019.7.4
+
+* support custom
+    - support custom design resolution
+    - update Readme

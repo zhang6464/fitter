@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/gestures.dart';
 
-import './viewport/view_adapter_config.dart';
+import './viewport/view_adapter.dart';
 export './viewport/custom_materialapp.dart';
 
 class InnerWidgetsFlutterBinding extends WidgetsFlutterBinding {
@@ -29,8 +29,8 @@ class InnerWidgetsFlutterBinding extends WidgetsFlutterBinding {
   @override
   ViewConfiguration createViewConfiguration() {
     return ViewConfiguration(
-      size: getScreenAdapterSize(),
-      devicePixelRatio: getAdapterRatio(),
+      size: ViewAdapter.getScreenAdapterSize(),
+      devicePixelRatio: ViewAdapter.getAdapterRatio(),
     );
   }
 
@@ -57,7 +57,7 @@ class InnerWidgetsFlutterBinding extends WidgetsFlutterBinding {
     _pendingPointerEvents.addAll(PointerEventConverter.expand(
         packet.data,
         // 适配事件的转换比率,采用我们修改的
-        getAdapterRatio()));
+        ViewAdapter.getAdapterRatio()));
     if (!locked) _flushPointerEventQueue();
   }
 

@@ -21,6 +21,26 @@ void main() {
 }
 ```
 
+If you wanna custom design resolution:
+
+```
+import 'package:fitter/fitter.dart'
+import 'package:fitter/viewport/view_adpter.dart';
+
+void main() {
+    // reset the static value
+    ViewAdapter.screeWidth = 375;
+    
+    InnerWidgetsFlutterBinding.ensureInitialized()
+      ..attachRootWidget(new MyApp())
+      ..scheduleWarmUpFrame();
+}
+```
+## Old Versions
+
+- If wanna support old version flutter sdk, please set `fitter` version `^0.1.0`
+- `fitter` version `^1.0.0` required flutter sdk version to be above `1.2.0`
+
 ## Kown Bugs
 
 * `UIKitView` components(like `webview` or `video`..) doesn't work as expected, and I'm not really clear about the reason now yet...
