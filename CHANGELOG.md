@@ -35,3 +35,9 @@
 * support custom
     - support custom design resolution
     - update Readme
+
+## [1.0.2] - 2019.7.9
+
+* update readme
+    - update readme, fix some word errors
+    - add cn readme, and set default
